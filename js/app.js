@@ -48,9 +48,11 @@ function shuffle(array) {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
-let c = document.querySelector('.card');
+let c = document.querySelectorAll('.card');
+let d = document.querySelector('.deck');
 let li = document.querySelector('li');
 let score = document.querySelector('.score-panel');
+let strs = document.querySelectorAll('.stars li i');
 
 
 function color () {
@@ -68,19 +70,58 @@ function color () {
   }
 }
 
+// this function starts our game.
 function start () {
   shuffle(arr);
   restart();
+  color();
+  numClicks();
+  starsRising();
 }
 
+// this function should increment the number of clicks or 'turns' the user has made.
+function numClicks () {
+  let num = document.querySelector('.moves');
+  console.log(typeof num);
+  num.addEventListener('click', function () {
+    console.log(num);
+    for (let i = 0; i < num.children.legnth; i++) {
+      console.log(num[i]);
+    }
+    let arr = [];
+    console.log(num);
+    arr.push(num);
+  });
+}
+
+function starsRising () {
+  let s = strs;
+  let deck = d;
+  let arr = [];
+  for (let i = 0; i < deck.length; i++) {
+    deck[i].addEventListener('click', function (e) {
+        let child = e.target.children;
+        for (let i = 0; i < child.length; i++) {
+          arr.push(child[i]);
+        }
+
+        if (arr.length === 7) {
+          s[2].style.color = 'rgba(0,0,0,0.05)';
+        } else if (arr.length === 10) {
+          s[1].style.color = 'rgba(0,0,0,0.05)';
+        } else if (arr.length === 15) {
+          s[0].style.color = 'rgba(0,0,0,0.05)';
+        }
+      });
+  }
+}
+
+
+// this function restarts our game. It resets out number of tries and the resets the number of stars.
 function restart () {
-  let strs = document.querySelectorAll('.stars li i');
   let num = score.children[1];
   let rst = score.children[2];
   rst.addEventListener('click', function () {
-    num.innerHTML = 3;
-    strs.forEach(function (i) {
-      return i.style.color = 'lightgrey';
-    });
+    num.innerHTML = 0;
   });
 }
