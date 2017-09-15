@@ -10,6 +10,17 @@
  *   - add each card's HTML to the page
  */
 
+
+// this array is to feed the shuffle function.
+// ------------------------------------------------------------
+let arr = [];
+let deck = document.querySelectorAll('.deck li i');
+deck.forEach(function (i) {
+  return arr.push(i);
+});
+// ------------------------------------------------------------
+
+
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
@@ -38,8 +49,9 @@ function shuffle(array) {
  */
 
 let c = document.querySelector('.card');
-let d = document.querySelector('.deck');
 let li = document.querySelector('li');
+let score = document.querySelector('.score-panel');
+
 
 function color () {
   d = d.children;
@@ -56,15 +68,19 @@ function color () {
   }
 }
 
+function start () {
+  shuffle(arr);
+  restart();
+}
 
-function symbol () {
-  let d = document.querySelector('.deck');
-  d = d.children;
-  for (let i = 0; i < d.length; i++) {
-    let deck = d[i];
-    deck = deck.children;
-    for (let j = 0; j < deck.length; j++) {
-      let icon = deck[j].className;
-    }
-  }
+function restart () {
+  let strs = document.querySelectorAll('.stars li i');
+  let num = score.children[1];
+  let rst = score.children[2];
+  rst.addEventListener('click', function () {
+    num.innerHTML = 3;
+    strs.forEach(function (i) {
+      return i.style.color = 'lightgrey';
+    });
+  });
 }
