@@ -72,56 +72,51 @@ function color () {
 
 // this function starts our game.
 function start () {
+  let num = score.children[1];
+  num.innerHTML = 0;
   shuffle(arr);
   restart();
   color();
-  numClicks();
-  starsRising();
+  gameTracker();
 }
 
-// this function should increment the number of clicks or 'turns' the user has made.
-function numClicks () {
-  let num = document.querySelector('.moves');
-  console.log(typeof num);
-  num.addEventListener('click', function () {
-    console.log(num);
-    for (let i = 0; i < num.children.legnth; i++) {
-      console.log(num[i]);
-    }
-    let arr = [];
-    console.log(num);
-    arr.push(num);
-  });
-}
-
-function starsRising () {
+// this function tracks our movement count and deducts stars after a certain number of turns.
+function gameTracker () {
+  let num = score.children[1];
   let s = strs;
   let deck = d;
   let arr = [];
+  let arr2 = [];
   for (let i = 0; i < deck.length; i++) {
     deck[i].addEventListener('click', function (e) {
-        let child = e.target.children;
-        for (let i = 0; i < child.length; i++) {
-          arr.push(child[i]);
-        }
+      let child = e.target.children;
+      for (let i = 0; i < child.length; i++) {
+        arr.push(child[i]);
+        arr2.push(num);
+        num.innerHTML = arr2.length;
+      }
 
-        if (arr.length === 7) {
-          s[2].style.color = 'rgba(0,0,0,0.05)';
-        } else if (arr.length === 10) {
-          s[1].style.color = 'rgba(0,0,0,0.05)';
-        } else if (arr.length === 15) {
-          s[0].style.color = 'rgba(0,0,0,0.05)';
-        }
-      });
+      if (arr.length === 7) {
+        s[2].style.color = 'rgba(0,0,0,0.05)';
+      } else if (arr.length === 10) {
+        s[1].style.color = 'rgba(0,0,0,0.05)';
+      } else if (arr.length === 15) {
+        s[0].style.color = 'rgba(0,0,0,0.05)';
+      }
+    });
   }
 }
 
 
 // this function restarts our game. It resets out number of tries and the resets the number of stars.
 function restart () {
+  let s = strs;
   let num = score.children[1];
   let rst = score.children[2];
   rst.addEventListener('click', function () {
     num.innerHTML = 0;
+    s[0].style.color = 'black';
+    s[1].style.color = 'black';
+    s[2].style.color = 'black';
   });
 }
