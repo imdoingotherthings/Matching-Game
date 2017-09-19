@@ -50,73 +50,82 @@ function shuffle(array) {
 
 let c = document.querySelectorAll('.card');
 let d = document.querySelector('.deck');
-let li = document.querySelector('li');
+let li = document.querySelectorAll('.deck li');
 let score = document.querySelector('.score-panel');
 let strs = document.querySelectorAll('.stars li i');
 
+// this object literal is defined so that we can pass in the object to access its methods while the DOM is being created and manipulated.
+let game = {
+  num: score.children[1],
+  rst: score.children[2],
+  s: strs,
+  deck: d.children,
+  arr: [],
+  arr2: []
+};
 
-function color () {
-  d = d.children;
-
-  for (let i = 0; i < d.length; i++) {
-    let deck = d[i];
-    deck.addEventListener('click', function () {
-      deck.style.backgroundColor = 'red';
-    });
-
-    deck.addEventListener('dblclick', function () {
-      deck.style.backgroundColor = '';
-    });
-  }
-}
 
 // this function starts our game.
-function start () {
-  let num = score.children[1];
-  num.innerHTML = 0;
+function start (g) {
+  g.num.innerHTML = 0;
   shuffle(arr);
-  restart();
-  color();
-  gameTracker();
+  restart(game);
+  gameTracker(game);
+  cards();
 }
 
-// this function tracks our movement count and deducts stars after a certain number of turns.
-function gameTracker () {
-  let num = score.children[1];
-  let s = strs;
-  let deck = d;
-  let arr = [];
-  let arr2 = [];
-  for (let i = 0; i < deck.length; i++) {
-    deck[i].addEventListener('click', function (e) {
-      let child = e.target.children;
-      for (let i = 0; i < child.length; i++) {
-        arr.push(child[i]);
-        arr2.push(num);
-        num.innerHTML = arr2.length;
-      }
+// this function is for the cards. It adds the CSS classes whenever a certain perameter is met.
+function cards () {
+  let uLi = li;
+  for (let i = 0; i < uLi.length; i++) {
+    uLi[i].className = 'card';
+    uLi[i].addEventListener('click', (e) => {
+      uLi[i].className = 'card show';
 
-      if (arr.length === 7) {
-        s[2].style.color = 'rgba(0,0,0,0.05)';
-      } else if (arr.length === 10) {
-        s[1].style.color = 'rgba(0,0,0,0.05)';
-      } else if (arr.length === 15) {
-        s[0].style.color = 'rgba(0,0,0,0.05)';
+      if (uLi > 2) {
+        uLi.className = 'card';
       }
     });
   }
 }
 
 
+// this function tracks our movement count and deducts stars after a certain number of turns.
+function gameTracker (g) {
+  for (let i = 0; i < g.deck.length; i++) {
+    g.deck[i].addEventListener('click', function (e) {
+      let child = e.target.children;
+      for (let i = 0; i < child.length; i++) {
+        g.arr.push(child[i]);
+        g.arr2.push(g.num);
+        g.num.innerHTML = g.arr2.length;
+      }
+
+      if (g.arr.length === 7) {
+        g.s[2].style.color = 'rgba(0,0,0,0.05)';
+      } else if (g.arr.length === 10) {
+        g.s[1].style.color = 'rgba(0,0,0,0.05)';
+      } else if (g.arr.length === 15) {
+        g.s[0].style.color = 'rgba(0,0,0,0.05)';
+      }
+    });
+  }
+}
+
 // this function restarts our game. It resets out number of tries and the resets the number of stars.
-function restart () {
-  let s = strs;
-  let num = score.children[1];
-  let rst = score.children[2];
-  rst.addEventListener('click', function () {
-    num.innerHTML = 0;
-    s[0].style.color = 'black';
-    s[1].style.color = 'black';
-    s[2].style.color = 'black';
+function restart (g) {
+  g.rst.addEventListener('click', function () {
+    g.num.innerHTML = 0;
+    for (let i = 0; i < g.num.length; i++) {
+      g.num = 0;
+    }
+
+    for (let i = 0; i < g.s.length; i++) {
+      g.s[i].style.color = 'black';
+    }
+    g.arr = [];
+    g.arr2 = [];
   });
 }
+
+start(game);
