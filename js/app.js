@@ -13,29 +13,37 @@
 
 // this array is to feed the shuffle function.
 // ------------------------------------------------------------
-let arr = [];
-let deck = document.querySelectorAll('.deck li i');
-deck.forEach(function (i) {
-  return arr.push(i);
-});
+let deckIcon = document.querySelectorAll('.deck li i');
 // ------------------------------------------------------------
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
-function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+// function shuffle(array) {
+//     var currentIndex = array.length, temporaryValue, randomIndex;
+//     console.log(array.length);
+//
+//     while (currentIndex !== 0) {
+//         randomIndex = Math.floor(Math.random() * currentIndex);
+//         currentIndex -= 1;
+//         temporaryValue = array[currentIndex];
+//         array[currentIndex] = array[randomIndex];
+//         array[randomIndex] = temporaryValue;
+//     }
+//
+//     return array;
+// }
 
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
-    }
-
-    return array;
+function shuffle (arr) {
+  let counter = arr.length;
+  while (counter > 0) {
+    let i = Math.floor(Math.random() * counter);
+    counter--;
+    let t = arr[counter];
+    arr[counter] = arr[i];
+    arr[i] = t;
+  }
+  return arr;
 }
-
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -68,22 +76,42 @@ let game = {
 // this function starts our game.
 function start (g) {
   g.num.innerHTML = 0;
-  shuffle(arr);
+  shuffle(deckIcon);
   restart(game);
   gameTracker(game);
-  cards();
+  cards(game);
 }
 
 // this function is for the cards. It adds the CSS classes whenever a certain perameter is met.
-function cards () {
+function cards (g) {
   let uLi = li;
+  let arr = [];
   for (let i = 0; i < uLi.length; i++) {
     uLi[i].className = 'card';
+    let child = uLi[i].children[0];
+    let childClass = uLi[i].children[0].className;
+    let pairs = [];
+
     uLi[i].addEventListener('click', (e) => {
       uLi[i].className = 'card show';
-
-      if (uLi > 2) {
-        uLi.className = 'card';
+      arr.push(child);
+      if (arr.length === 2) {
+        if (arr[0].className === arr[1].className) {
+            pairs.push(arr[0]);
+            pairs.push(arr[1]);
+            pairs.forEach((j) => {
+              j.parentNode.className = 'card match';
+            });
+            arr = [];
+        } else {
+          console.log(arr);
+          arr.forEach((k) => {
+            setTimeout(() => {
+              k.parentNode.className = 'card';
+            }, 1000);
+          });
+          arr = [];
+        }
       }
     });
   }
@@ -125,6 +153,8 @@ function restart (g) {
     }
     g.arr = [];
     g.arr2 = [];
+
+    cards();
   });
 }
 
