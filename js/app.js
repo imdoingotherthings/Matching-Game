@@ -10,17 +10,42 @@
  *   - add each card's HTML to the page
  */
 
+ let c = document.querySelectorAll('.card');
+ let d = document.querySelector('.deck');
+ let li = document.querySelectorAll('.deck li');
+ let score = document.querySelector('.score-panel');
+ let strs = document.querySelectorAll('.stars li i');
+ let deckIcon = document.querySelectorAll('.deck li i');
+
+ let masterArr = [];
+deckIcon.forEach((i) => {
+  return masterArr.push(i);
+});
+ // masterArr.sort();
+
+ function shuffle (array) {
+  var i = 0
+    , j = 0
+    , temp = null
+
+  for (i = array.length - 1; i > 0; i -= 1) {
+    j = Math.floor(Math.random() * (i + 1))
+    temp = array[i]
+    array[i] = array[j]
+    array[j] = temp
+  }
+}
+
 
 // this array is to feed the shuffle function.
 // ------------------------------------------------------------
-let deckIcon = document.querySelectorAll('.deck li i');
+
 // ------------------------------------------------------------
 
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 // function shuffle(array) {
 //     var currentIndex = array.length, temporaryValue, randomIndex;
-//     console.log(array.length);
 //
 //     while (currentIndex !== 0) {
 //         randomIndex = Math.floor(Math.random() * currentIndex);
@@ -33,17 +58,17 @@ let deckIcon = document.querySelectorAll('.deck li i');
 //     return array;
 // }
 
-function shuffle (arr) {
-  let counter = arr.length;
-  while (counter > 0) {
-    let i = Math.floor(Math.random() * counter);
-    counter--;
-    let t = arr[counter];
-    arr[counter] = arr[i];
-    arr[i] = t;
-  }
-  return arr;
-}
+// function shuffle (arr) {
+//   let counter = arr.length;
+//   while (counter > 0) {
+//     let i = Math.floor(Math.random() * counter);
+//     counter--;
+//     let t = arr[counter];
+//     arr[counter] = arr[i];
+//     arr[i] = t;
+//   }
+//   return arr;
+// }
 
 /*
  * set up the event listener for a card. If a card is clicked:
@@ -56,11 +81,6 @@ function shuffle (arr) {
  *    + if all cards have matched, display a message with the final score (put this functionality in another function that you call from this one)
  */
 
-let c = document.querySelectorAll('.card');
-let d = document.querySelector('.deck');
-let li = document.querySelectorAll('.deck li');
-let score = document.querySelector('.score-panel');
-let strs = document.querySelectorAll('.stars li i');
 
 // this object literal is defined so that we can pass in the object to access its methods while the DOM is being created and manipulated.
 let game = {
@@ -69,14 +89,15 @@ let game = {
   s: strs,
   deck: d.children,
   arr: [],
-  arr2: []
+  arr2: [],
+  update: []
 };
 
 
 // this function starts our game.
 function start (g) {
   g.num.innerHTML = 0;
-  shuffle(deckIcon);
+  shuffle(masterArr);
   restart(game);
   gameTracker(game);
   cards(game);
@@ -91,32 +112,46 @@ function cards (g) {
     let child = uLi[i].children[0];
     let childClass = uLi[i].children[0].className;
     let pairs = [];
+    let update = [];
 
     uLi[i].addEventListener('click', (e) => {
-      uLi[i].className = 'card show';
-      arr.push(child);
-      if (arr.length === 2) {
-        if (arr[0].className === arr[1].className) {
-            pairs.push(arr[0]);
-            pairs.push(arr[1]);
-            pairs.forEach((j) => {
-              j.parentNode.className = 'card match';
+      e.stopPropagation(); // stop bubbling behavior
+      uLi[i].className = 'card show'; // at each click the ul classname is changed to 'card show'
+      arr.push(child); // the icon element is being pushed into the arr array
+      if (arr.length === 2) { // the conditional checks if the arr array is equal to 2
+        g.update.push(child);
+        if (arr[0].className === arr[1].className) { // this next conditional checks if the elements that are inside the array are equal
+            pairs.push(arr[0]); // if the conditional is met, we push the first element to a new array - pairs
+            pairs.push(arr[1]); // this second element gets pushed to the array pairs
+            pairs.forEach((j) => { // we then iterate through the pairs array to set the classname of the parent element 'li' to the class 'card match'
+              j.parentNode.className = 'card match'; // sets the parent element to class 'card match'
             });
-            arr = [];
+            arr = []; // the last piece of the conditional is to set the first array to an empty array
         } else {
-          console.log(arr);
           arr.forEach((k) => {
             setTimeout(() => {
+              e.stopPropagation();
               k.parentNode.className = 'card';
-            }, 1000);
+            }, 500);
           });
           arr = [];
         }
       }
-    });
+      if (g.update.length === 8) {
+        alert("Would you like to play again?");
+      }
+    }, false);
   }
 }
 
+let sec = 0;
+function pad (t) {
+  return t > 9 ? t : "0" + t;
+}
+setInterval(() => {
+  document.querySelector('#sec').innerHTML = pad(++sec%60);
+  document.querySelector('#min').innerHTML = pad(parseInt(sec/60, 10));
+}, 1000);
 
 // this function tracks our movement count and deducts stars after a certain number of turns.
 function gameTracker (g) {
@@ -131,9 +166,9 @@ function gameTracker (g) {
 
       if (g.arr.length === 7) {
         g.s[2].style.color = 'rgba(0,0,0,0.05)';
-      } else if (g.arr.length === 10) {
-        g.s[1].style.color = 'rgba(0,0,0,0.05)';
       } else if (g.arr.length === 15) {
+        g.s[1].style.color = 'rgba(0,0,0,0.05)';
+      } else if (g.arr.length === 20) {
         g.s[0].style.color = 'rgba(0,0,0,0.05)';
       }
     });
@@ -154,8 +189,10 @@ function restart (g) {
     g.arr = [];
     g.arr2 = [];
 
+
+
     cards();
   });
 }
-
+pad(sec)
 start(game);
