@@ -86,11 +86,14 @@ deckIcon.forEach((i) => {
 let game = {
   num: score.children[1],
   rst: score.children[2],
+  rstBtn: score.children[3],
   s: strs,
   deck: d.children,
   arr: [],
   arr2: [],
-  update: []
+  update: [],
+  arrCrds: [],
+  pairs: []
 };
 
 
@@ -105,40 +108,36 @@ function start (g) {
 
 // this function is for the cards. It adds the CSS classes whenever a certain perameter is met.
 function cards (g) {
-  let uLi = li;
-  let arr = [];
-  for (let i = 0; i < uLi.length; i++) {
-    uLi[i].className = 'card';
-    let child = uLi[i].children[0];
-    let childClass = uLi[i].children[0].className;
-    let pairs = [];
-    let update = [];
+  for (let i = 0; i < li.length; i++) {
+    li[i].className = 'card';
+    let child = li[i].children[0];
+    let childClass = li[i].children[0].className;
 
-    uLi[i].addEventListener('click', (e) => {
+    li[i].addEventListener('click', (e) => {
       e.stopPropagation(); // stop bubbling behavior
-      uLi[i].className = 'card show'; // at each click the ul classname is changed to 'card show'
-      arr.push(child); // the icon element is being pushed into the arr array
-      if (arr.length === 2) { // the conditional checks if the arr array is equal to 2
-        g.update.push(child);
-        if (arr[0].className === arr[1].className) { // this next conditional checks if the elements that are inside the array are equal
-            pairs.push(arr[0]); // if the conditional is met, we push the first element to a new array - pairs
-            pairs.push(arr[1]); // this second element gets pushed to the array pairs
-            pairs.forEach((j) => { // we then iterate through the pairs array to set the classname of the parent element 'li' to the class 'card match'
+      li[i].className = 'card show'; // at each click the ul classname is changed to 'card show'
+      g.arrCrds.push(child); // the icon element is being pushed into the arr array
+      if (g.arrCrds.length === 2) { // the conditional checks if the arr array is equal to 2
+        if (g.arrCrds[0].className === g.arrCrds[1].className) { // this next conditional checks if the elements that are inside the array are equal
+          g.update.push(g.arrCrds);
+            g.pairs.push(g.arrCrds[0]); // if the conditional is met, we push the first element to a new array - pairs
+            g.pairs.push(g.arrCrds[1]); // this second element gets pushed to the array pairs
+            g.pairs.forEach((j) => { // we then iterate through the pairs array to set the classname of the parent element 'li' to the class 'card match'
               j.parentNode.className = 'card match'; // sets the parent element to class 'card match'
             });
-            arr = []; // the last piece of the conditional is to set the first array to an empty array
+            g.arrCrds = []; // the last piece of the conditional is to set the first array to an empty array
         } else {
-          arr.forEach((k) => {
+          g.arrCrds.forEach((k) => {
             setTimeout(() => {
               e.stopPropagation();
               k.parentNode.className = 'card';
             }, 500);
           });
-          arr = [];
+          g.arrCrds = [];
         }
       }
       if (g.update.length === 8) {
-        alert("Would you like to play again?");
+        alert('Would you like to play again?');
       }
     }, false);
   }
@@ -152,6 +151,7 @@ setInterval(() => {
   document.querySelector('#sec').innerHTML = pad(++sec%60);
   document.querySelector('#min').innerHTML = pad(parseInt(sec/60, 10));
 }, 1000);
+
 
 // this function tracks our movement count and deducts stars after a certain number of turns.
 function gameTracker (g) {
@@ -177,7 +177,7 @@ function gameTracker (g) {
 
 // this function restarts our game. It resets out number of tries and the resets the number of stars.
 function restart (g) {
-  g.rst.addEventListener('click', function () {
+  g.rstBtn.addEventListener('click', function () {
     g.num.innerHTML = 0;
     for (let i = 0; i < g.num.length; i++) {
       g.num = 0;
@@ -186,13 +186,17 @@ function restart (g) {
     for (let i = 0; i < g.s.length; i++) {
       g.s[i].style.color = 'black';
     }
+    for (let k = 0; k < li.length; k++) {
+      li[k].className = 'card';
+    }
+
     g.arr = [];
     g.arr2 = [];
-
-
-
-    cards();
+    g.update = [];
+    g.arrCrds = [];
+    g.pairs = [];
+    cards(game);
   });
 }
-pad(sec)
+
 start(game);
